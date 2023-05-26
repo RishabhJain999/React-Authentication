@@ -19,6 +19,7 @@ export const Register = () => {
     isValidMatch: false
   });
   const [status, setStatus] = useState('');
+
   const handleChange = (e) => {
     setUserDetails({ ...userDetails, [e.target.name]: e.target.value });
   };
@@ -62,97 +63,96 @@ export const Register = () => {
     setUserDetails({ ...userDetails, ...fn() });
   };
   return (
-    <div className={`${status ? 'h-screen p-5 relative' : 'p-5 relative'}`}>
-      {!status ? (
-        <Window>
-          <Heading
-            className='text-black mb-5 text-center text-sm'
-            level={5}
-            title='Register'
-          />
-          <form onSubmit={handleSubmit}>
-            <div className='grid grid-cols-6 gap-5'>
-              <TextInput
-                ref={elRef}
-                id='username'
-                className='col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
-                label='UserName'
-                placeholder='John'
-                required={true}
-                autoComplete='off'
-                value={userDetails.username}
-                onChange={(e) => handleChange(e)}
-                error={
-                  userDetails.username && !isValid.isValidName ? (
-                    <>
-                      4 to 24 characters.
-                      <br />
-                      Must begin with a letter.
-                      <br />
-                      Letters, numbers, underscores, hyphens allowed.
-                    </>
-                  ) : null
-                }
-              />
-              <TextInput
-                id='password'
-                type='password'
-                className='col-span-6 sm:col-span-4  sm:col-start-2
+    <div className={`${status ? ' p-5 relative' : 'p-5 relative'}`}>
+      <Window>
+        <Heading
+          className='text-black mb-5 text-center text-sm'
+          level={5}
+          title='Register'
+        />
+        <form onSubmit={handleSubmit}>
+          <div className='grid grid-cols-6 gap-5'>
+            <TextInput
+              ref={elRef}
+              id='username'
+              className='col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
+              label='UserName'
+              placeholder='John'
+              required={true}
+              autoComplete='off'
+              value={userDetails.username}
+              onChange={(e) => handleChange(e)}
+              error={
+                userDetails.username && !isValid.isValidName ? (
+                  <>
+                    4 to 24 characters.
+                    <br />
+                    Must begin with a letter.
+                    <br />
+                    Letters, numbers, underscores, hyphens allowed.
+                  </>
+                ) : null
+              }
+            />
+            <TextInput
+              id='password'
+              type='password'
+              className='col-span-6 sm:col-span-4  sm:col-start-2
               lg:col-start-3 lg:col-span-2'
-                label='Password'
-                required={true}
-                autoComplete='off'
-                value={userDetails.password}
-                onChange={(e) => handleChange(e)}
-                error={
-                  userDetails.password && !isValid.isValidPswd ? (
-                    <>
-                      8 to 24 characters.
-                      <br />
-                      Must include uppercase and lowercase letters, a number and
-                      a special character.
-                      <br />
-                    </>
-                  ) : null
-                }
-              />
+              label='Password'
+              required={true}
+              autoComplete='off'
+              value={userDetails.password}
+              onChange={(e) => handleChange(e)}
+              error={
+                userDetails.password && !isValid.isValidPswd ? (
+                  <>
+                    8 to 24 characters.
+                    <br />
+                    Must include uppercase and lowercase letters, a number and a
+                    special character.
+                    <br />
+                  </>
+                ) : null
+              }
+            />
 
-              <TextInput
-                id='confirmPassword'
-                type='password'
-                className='col-span-6 sm:col-span-4 sm:col-start-2
+            <TextInput
+              id='confirmPassword'
+              type='password'
+              className='col-span-6 sm:col-span-4 sm:col-start-2
               lg:col-start-3 lg:col-span-2'
-                label='Confirm Password'
-                required={true}
-                autoComplete='off'
-                value={userDetails.confirmPassword}
-                onChange={(e) => handleChange(e)}
-                error={
-                  userDetails.confirmPassword && !isValid.isValidMatch
-                    ? 'Must match the first password input field.'
-                    : null
-                }
-              />
-              <Button
-                type='submit'
-                className='mt-2 max-w-xl col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
-                variant='primary'
-                disabled={
-                  !userDetails.username ||
-                  !userDetails.password ||
-                  !userDetails.confirmPassword ||
-                  !isValid.isValidMatch ||
-                  !isValid.isValidName ||
-                  !isValid.isValidPswd
-                }
-              >
-                Sign In
-              </Button>
-            </div>
-          </form>
-        </Window>
-      ) : (
-        <Modal>
+              label='Confirm Password'
+              required={true}
+              autoComplete='off'
+              value={userDetails.confirmPassword}
+              onChange={(e) => handleChange(e)}
+              error={
+                userDetails.confirmPassword && !isValid.isValidMatch
+                  ? 'Must match the first password input field.'
+                  : null
+              }
+            />
+            <Button
+              type='submit'
+              className='mt-2 max-w-xl col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
+              variant='primary'
+              disabled={
+                !userDetails.username ||
+                !userDetails.password ||
+                !userDetails.confirmPassword ||
+                !isValid.isValidMatch ||
+                !isValid.isValidName ||
+                !isValid.isValidPswd
+              }
+            >
+              Sign In
+            </Button>
+          </div>
+        </form>
+      </Window>
+      {status ? (
+        <Modal setStatus={setStatus} status={status}>
           <div>
             <p className='text-center'>{status}</p>
             <Button
@@ -164,7 +164,7 @@ export const Register = () => {
             </Button>
           </div>
         </Modal>
-      )}
+      ) : null}
     </div>
   );
 };

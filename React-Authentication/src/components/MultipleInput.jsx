@@ -16,11 +16,9 @@ export const MultipleInput = ({ inputs, setInputs }) => {
   }
 
   const handleDelete = (index) => {
-    console.log(index)
     const filteredInputs = inputs.filter((_, i) => {
       return index !== i
     })
-    console.log(filteredInputs)
     setInputs(filteredInputs)
   }
   return (

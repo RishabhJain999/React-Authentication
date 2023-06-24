@@ -1,85 +1,125 @@
-import { TextInput } from './forms/TextInput';
-import { Button } from './forms/Button';
-import { Window } from './common/Window';
-import { Heading } from './elements/Heading/Heading';
-import { useState, useEffect, useRef } from 'react';
-import { PWD_REGEX, USER_REGEX } from '../utils/Validations';
-import { Modal } from './Modal';
+import { TextInput } from './forms/TextInput'
+import { Button } from './forms/Button'
+import { Window } from './common/Window'
+import { Heading } from './elements/Heading/Heading'
+import { useState, useEffect, useRef } from 'react'
+import { PWD_REGEX, USER_REGEX } from '../utils/Validations'
+// import { Modal } from './Modal'
+import axios from '../api/axios'
+// import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { v4 as uuidv4 } from 'uuid'
+
+// import { newUser } from '../utils/actions'
 
 export const Register = () => {
-  const elRef = useRef();
+  const elRef = useRef()
+  const navigate = useNavigate()
   const [userDetails, setUserDetails] = useState({
     username: '',
     password: '',
     confirmPassword: ''
-  });
+  })
   const [isValid, setIsValid] = useState({
     isValidName: false,
     isValidPswd: false,
     isValidMatch: false
-  });
-  const [status, setStatus] = useState('');
-
+  })
+  const [status, setStatus] = useState('')
+  const [error, setError] = useState('')
   const handleChange = (e) => {
-    setUserDetails({ ...userDetails, [e.target.name]: e.target.value });
-  };
+    setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
+  }
 
   useEffect(() => {
-    elRef.current && elRef.current.focus();
-  }, []);
+    elRef.current && elRef.current.focus()
+  }, [])
 
   useEffect(() => {
-    const v = USER_REGEX.test(userDetails.username);
-    setIsValid({ ...isValid, isValidName: v });
+    const v = USER_REGEX.test(userDetails.username)
+    setIsValid({ ...isValid, isValidName: v })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails.username]);
+  }, [userDetails.username])
 
   useEffect(() => {
-    const v = PWD_REGEX.test(userDetails.password);
+    const v = PWD_REGEX.test(userDetails.password)
     const match =
       !!userDetails.password &&
-      userDetails.password === userDetails.confirmPassword;
-    setIsValid({ ...isValid, isValidPswd: v, isValidMatch: match });
+      userDetails.password === userDetails.confirmPassword
+    setIsValid({ ...isValid, isValidPswd: v, isValidMatch: match })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails.password]);
+  }, [userDetails.password])
 
   const fn = () => ({
     username: '',
     password: '',
     confirmPassword: ''
-  });
+  })
 
   useEffect(() => {
     const match =
       !!userDetails.password &&
-      userDetails.password === userDetails.confirmPassword;
-    setIsValid({ ...isValid, isValidMatch: match });
+      userDetails.password === userDetails.confirmPassword
+    setIsValid({ ...isValid, isValidMatch: match })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails.confirmPassword]);
+  }, [userDetails.confirmPassword])
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setStatus('User registered successfully!');
-    setUserDetails({ ...userDetails, ...fn() });
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    // user creation api
+    try {
+      await axios.post(
+        '/users',
+        {
+          username: userDetails.username,
+          password: userDetails.password,
+          id: uuidv4()
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      setUserDetails({ ...userDetails, ...fn() })
+      error && setError('')
+      setStatus('User successfully register!')
+      setTimeout(() => {
+        setStatus('')
+        navigate('/login')
+      }, 2000)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
   return (
-    <div className={`${status ? ' p-5 relative' : 'p-5 relative'}`}>
+    <div className="p-5 relative">
       <Window>
+        {error && (
+          <h5 className="bg-red-600 p-5 text-center mb-3 text-red-200">
+            {error}
+          </h5>
+        )}
+        {!error && status && (
+          <h5 className="bg-green-600 p-5 text-center mb-3 text-green-200">
+            {status}
+          </h5>
+        )}
         <Heading
-          className='text-black mb-5 text-center text-sm'
-          level={5}
-          title='Register'
+          className="text-black mb-5 text-center "
+          level={1}
+          title="Register"
         />
         <form onSubmit={handleSubmit}>
-          <div className='grid grid-cols-6 gap-5'>
+          <div className="grid grid-cols-6 gap-5">
             <TextInput
               ref={elRef}
-              id='username'
-              className='col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
-              label='UserName'
-              placeholder='John'
+              id="username"
+              className="col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2"
+              label="UserName"
+              placeholder="John"
               required={true}
-              autoComplete='off'
+              autoComplete="off"
               value={userDetails.username}
               onChange={(e) => handleChange(e)}
               error={
@@ -95,13 +135,13 @@ export const Register = () => {
               }
             />
             <TextInput
-              id='password'
-              type='password'
-              className='col-span-6 sm:col-span-4  sm:col-start-2
-              lg:col-start-3 lg:col-span-2'
-              label='Password'
+              id="password"
+              type="password"
+              className="col-span-6 sm:col-span-4  sm:col-start-2
+              lg:col-start-3 lg:col-span-2"
+              label="Password"
               required={true}
-              autoComplete='off'
+              autoComplete="off"
               value={userDetails.password}
               onChange={(e) => handleChange(e)}
               error={
@@ -118,13 +158,13 @@ export const Register = () => {
             />
 
             <TextInput
-              id='confirmPassword'
-              type='password'
-              className='col-span-6 sm:col-span-4 sm:col-start-2
-              lg:col-start-3 lg:col-span-2'
-              label='Confirm Password'
+              id="confirmPassword"
+              type="password"
+              className="col-span-6 sm:col-span-4 sm:col-start-2
+              lg:col-start-3 lg:col-span-2"
+              label="Confirm Password"
               required={true}
-              autoComplete='off'
+              autoComplete="off"
               value={userDetails.confirmPassword}
               onChange={(e) => handleChange(e)}
               error={
@@ -134,9 +174,9 @@ export const Register = () => {
               }
             />
             <Button
-              type='submit'
-              className='mt-2 max-w-xl col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2'
-              variant='primary'
+              type="submit"
+              className="mt-2 max-w-xl col-span-6 sm:col-span-4 sm:col-start-2 lg:col-start-3 lg:col-span-2"
+              variant="primary"
               disabled={
                 !userDetails.username ||
                 !userDetails.password ||
@@ -146,25 +186,25 @@ export const Register = () => {
                 !isValid.isValidPswd
               }
             >
-              Sign In
+              Register
             </Button>
           </div>
         </form>
       </Window>
-      {status ? (
+      {/* {status ? (
         <Modal setStatus={setStatus} status={status}>
           <div>
-            <p className='text-center'>{status}</p>
+            <p className="text-center">{status}</p>
             <Button
-              variant='secondary'
-              className='mt-5'
+              variant="secondary"
+              className="mt-5"
               onClick={() => setStatus('')}
             >
               Close
             </Button>
           </div>
         </Modal>
-      ) : null}
+      ) : null} */}
     </div>
-  );
-};
+  )
+}
